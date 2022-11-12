@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence" version="2.0">
+    <!--需要配置persistence-unit节点
+        持久化单元：
+            name:持久化单元名称：随便写
+            transaction-type:事务管理方式
+                JTA:分布式事务
+                RESOURCE_LOCAL:本地事务
+    -->
+    <persistence-unit name="myJpa" transaction-type="RESOURCE_LOCAL" >
+        <!--jpa的实现方式-->
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+        <!--数据库连接信息-->
+        <properties>
+            <!--数据库连接信息
+                用户名：
+                密码：
+                驱动：
+                url:
+            -->
+            <property name="javax.persistence.jdbc.user" value="root"/>
+            <property name="javax.persistence.jdbc.password" value="331224"/>
+            <property name="javax.persistence.jdbc.driver" value="com.mysql.jdbc.Driver"/>
+            <property name="javax.persistence.jdbc.url" value="jdbc:mysql://127.0.0.1:3306/spring_data_jpa_one"/>
+            <!--这两个都行-->
+            <!--<property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
+            <property name="hibernate.connection.username" value="root" />
+            <property name="hibernate.connection.password" value="331224" />
+            <property name="hibernate.connection.url" value="jdbc:mysql://127.0.0.1:3306/spring_data_jpa_one" />
+            --><!--可选配置，配置jpa是可选方式的配置信息
+            显示ssql          false|true
+            自动创建数据库表   hibernate.hbm2ddl.auto
+                            create
+                            update
+                            none
+            -->
+            <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5Dialect" />
+            <property name="hibernate.show_sql" value="true" />
+            <property name="hibernate.format_sql" value="true" />
+            <property name="hibernate.hbm2ddl.auto" value="update" />
+            
+        </properties>
+    </persistence-unit>
+
+</persistence>
