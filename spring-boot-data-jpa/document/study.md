@@ -336,8 +336,77 @@ CREATE TABLE `user_role_rel` (
 #### 2.自动生成的表结构
 
 ```sql
+CREATE TABLE `t_sys_user2` (
+  `t_id` int(11) NOT NULL AUTO_INCREMENT,
+  `t_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`t_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8;
 
 
+CREATE TABLE `t_sys_role2` (
+  `t_id` int(11) NOT NULL AUTO_INCREMENT,
+  `t_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`t_id`)
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8;
 
+
+CREATE TABLE `user_role_rel2` (
+  `role_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  KEY `FK5o1if0v99f02hwcnvmitah1j7` (`user_id`),
+  KEY `FKkjme7hdhxcgkbka7kox6r9ul` (`role_id`),
+  CONSTRAINT `FK5o1if0v99f02hwcnvmitah1j7` FOREIGN KEY (`user_id`) REFERENCES `t_sys_user2` (`t_id`),
+  CONSTRAINT `FKkjme7hdhxcgkbka7kox6r9ul` FOREIGN KEY (`role_id`) REFERENCES `t_sys_role2` (`t_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+```
+
+## 2.联合主键
+
+### 1.方式一
+
+```java
+1.通过 主键实体打上注解@Embeddabl
+表实体中主键属性打上注解 @EmbeddedId
+
+2.主要的实体
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Embeddable
+public class ComputerPK implements Serializable {
+
+    @Column(name = "t_ip")
+    private String ip;
+
+    @Column(name = "t_owner_id")
+    private String ownerId;
+
+
+}
+
+
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "t_computer")
+public class Computer {
+
+    @EmbeddedId
+    private ComputerPK computerPK;
+
+    @Column(name="t_brand_name")
+    private String brandName;
+
+}
+3.自动生成的表结构
+CREATE TABLE `t_computer` (
+  `t_ip` varchar(255) NOT NULL,
+  `t_owner_id` varchar(255) NOT NULL,
+  `t_brand_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`t_ip`,`t_owner_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 

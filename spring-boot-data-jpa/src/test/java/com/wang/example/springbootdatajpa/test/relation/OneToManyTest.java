@@ -1,4 +1,4 @@
-package com.wang.example.springbootdatajpa.test;
+package com.wang.example.springbootdatajpa.test.relation;
 
 import com.wang.example.springbootdatajpa.entity.one2Many.Project;
 import com.wang.example.springbootdatajpa.entity.one2Many.Student;

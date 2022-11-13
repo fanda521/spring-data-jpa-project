@@ -1,4 +1,4 @@
-package com.wang.example.springbootdatajpa.test;
+package com.wang.example.springbootdatajpa.test.relation;
 
 import com.wang.example.springbootdatajpa.entity.many2many.SysRole;
 import com.wang.example.springbootdatajpa.entity.many2many.SysRole2;
