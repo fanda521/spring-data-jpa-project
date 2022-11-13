@@ -5,7 +5,7 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
 
 /**
- * @author lucksoul 王吉慧
+ * @author allen
  * @version 1.0
  * @date 2020-09-12 18:18
  */

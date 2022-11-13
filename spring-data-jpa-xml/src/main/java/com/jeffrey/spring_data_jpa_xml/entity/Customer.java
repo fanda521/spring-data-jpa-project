@@ -1,7 +1,7 @@
 package com.jeffrey.spring_data_jpa_xml.entity;
 
 /**
- * @author lucksoul 王吉慧
+ * @author allen
  * @version 1.0
  * @date 2020-09-12 9:48
  */

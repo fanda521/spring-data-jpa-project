@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * @author lucksoul 王吉慧
+ * @author allen
  * @version 1.0
  * @date 2020-02-19 19:53
  */

@@ -15,7 +15,7 @@ import java.util.List;
 
 /**
  * @version 1.0
- * @Aythor lucksoul 王吉慧
+ * @Aythor allen
  * @date 2022/10/16 22:48
  * @description
  * 属性不支持嵌套或者分组约束，比如这样的查询 firstname = ?0 or (firstname = ?1 and lastname = ?2)

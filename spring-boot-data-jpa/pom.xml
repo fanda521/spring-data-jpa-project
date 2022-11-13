@@ -19,6 +19,12 @@
     </properties>
 
     <dependencies>
+        <!--lombok-->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
         <!--querydsl-->
         <dependency>
             <groupId>com.querydsl</groupId>
