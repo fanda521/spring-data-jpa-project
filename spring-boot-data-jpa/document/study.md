@@ -449,7 +449,8 @@ public class Computer2PK implements Serializable {
     private String ownerId;
 
 
-}    
+}
+
 
 
 3.自动生成的表结构
@@ -462,3 +463,46 @@ CREATE TABLE `t_computer2` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
+## 3.审计
+
+### 1.添加注解
+
+```
+1.启动类
+
+@EnableJpaAuditing
+2.注解类
+@EntityListeners({AuditingEntityListener.class})
+```
+
+### 2.自定义实现接口AuditorAware的类
+
+```java
+@Component
+public class AuditConfig implements AuditorAware {
+    /**
+     * Returns the current auditor of the application.
+     *
+     * @return the current auditor
+     */
+    @Override
+    public Optional getCurrentAuditor() {
+        return Optional.of("allen");
+    }
+}
+
+
+```
+
+
+
+### 3.在实体类字段加上注解
+
+```
+@CreatedBy ：由谁创建这条记录
+@LastModifiedBy：是谁最后更新了这条记录
+@CreatedDate：创建时间
+@LastModifiedDate：最后更新时间
+```
+
+![1668440387641](C:\Users\10560\AppData\Roaming\Typora\typora-user-images\1668440387641.png)
