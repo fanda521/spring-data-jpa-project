@@ -410,3 +410,55 @@ CREATE TABLE `t_computer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 ```
 
+### 2.方式二
+
+```java
+1.@IdClass 配合 @Id  和上面的效果差不多，可能根据方法名字操作方便点
+
+2.主要的实体
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Table(name = "t_computer2")
+@IdClass(Computer2PK.class)
+public class Computer2 {
+
+    @Id
+    @Column(name = "t_ip")
+    private String ip;
+
+    @Id
+    @Column(name = "t_owner_id")
+    private String ownerId;
+
+    @Column(name="t_brand_name")
+    private String brandName;
+
+}
+--------------------------------------------------
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Computer2PK implements Serializable {
+
+    private String ip;
+
+    private String ownerId;
+
+
+}    
+
+
+3.自动生成的表结构
+
+CREATE TABLE `t_computer2` (
+  `t_ip` varchar(255) NOT NULL,
+  `t_owner_id` varchar(255) NOT NULL,
+  `t_brand_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`t_ip`,`t_owner_id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+```
+
