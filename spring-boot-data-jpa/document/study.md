@@ -506,3 +506,92 @@ public class AuditConfig implements AuditorAware {
 ```
 
 ![1668440387641](C:\Users\10560\AppData\Roaming\Typora\typora-user-images\1668440387641.png)
+
+
+
+## 4.jpa继承
+
+### 1.SINGLE_TABLE
+
+#### 1.简单说明
+
+```
+单表继承策略 SINGLE_TABLE
+
+父类实体和子类实体共用一张数据库表，在表中通过一个辨别字段的值来区分不同类别的实体。
+```
+
+#### 2表对应的实体
+
+##### 1.父类
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)//继承的策略
+@Table(name = "WINDOW_FILE")
+@DiscriminatorColumn(name = "DISCRIMINATOR", discriminatorType = DiscriminatorType.STRING, length = 30)  // 指定辨别字段的类型为String，长度30
+@DiscriminatorValue("WindowFile")//指定辨别的字段值
+public class WindowFile {
+   
+     @Id  
+     @GeneratedValue(strategy = GenerationType.AUTO)  
+     private Integer id;  
+   
+     @Basic  
+     @Column(name = "NAME")  
+     private String name;  
+   
+     @Basic  
+     @Column(name = "TYPE")  
+     private String type;  
+   
+     @Basic  
+     @Column(name = "DATE")  
+     private Date date;
+
+}
+```
+
+##### 2.子类1
+
+```java
+@Entity
+@DiscriminatorValue("Document")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Document extends WindowFile {
+
+ @Basic
+ @Column(name = "SIZE")
+ private String size;
+
+}
+```
+
+##### 3.子类2
+
+```java
+@Entity
+@DiscriminatorValue("Folder")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+public class Folder extends WindowFile {
+
+ @Basic
+ @Column(name = "FILE_COUNT")
+ private Integer fileCount;
+
+}
+```
+
+![1669373795085](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1669373795085.png)
+
+![1669373811076](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1669373811076.png)

@@ -1,7 +1,7 @@
 package com.wang.example.springbootdatajpa.test;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.wang.example.springbootdatajpa.entity.QPerson;
+//import com.wang.example.springbootdatajpa.entity.QPerson;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,10 +31,10 @@ public class PersonQueryDslTest {
         jpaQueryFactory = new JPAQueryFactory(entityManager);
     }
 
-    @Test
+    /*@Test
     public void testDSL01() {
         QPerson person = QPerson.person;
 
-    }
+    }*/
 
 }

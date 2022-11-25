@@ -5,6 +5,8 @@
       <module fileurl="file://$PROJECT_DIR$/spring-boot-data-jpa/spring-boot-data-jpa.iml" filepath="$PROJECT_DIR$/spring-boot-data-jpa/spring-boot-data-jpa.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/spring-data-jpa-project.iml" filepath="$PROJECT_DIR$/.idea/spring-data-jpa-project.iml" />
       <module fileurl="file://$PROJECT_DIR$/spring-data-jpa-study-one/spring-data-jpa-study-one.iml" filepath="$PROJECT_DIR$/spring-data-jpa-study-one/spring-data-jpa-study-one.iml" />
+      <module fileurl="file://$PROJECT_DIR$/spring-data-jpa-xml/spring-data-jpa-xml.iml" filepath="$PROJECT_DIR$/spring-data-jpa-xml/spring-data-jpa-xml.iml" />
+      <module fileurl="file://$PROJECT_DIR$/springboot-jpa-h2/springboot-jpa-h2.iml" filepath="$PROJECT_DIR$/springboot-jpa-h2/springboot-jpa-h2.iml" />
     </modules>
   </component>
 </project>

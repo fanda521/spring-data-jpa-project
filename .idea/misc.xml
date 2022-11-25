@@ -8,6 +8,8 @@
       <list>
         <option value="$PROJECT_DIR$/spring-boot-data-jpa/pom.xml" />
         <option value="$PROJECT_DIR$/spring-data-jpa-study-one/pom.xml" />
+        <option value="$PROJECT_DIR$/spring-data-jpa-xml/pom.xml" />
+        <option value="$PROJECT_DIR$/springboot-jpa-h2/pom.xml" />
       </list>
     </option>
   </component>
