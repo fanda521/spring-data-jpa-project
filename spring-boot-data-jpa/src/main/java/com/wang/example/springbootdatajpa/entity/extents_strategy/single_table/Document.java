@@ -1,9 +1,6 @@
 package com.wang.example.springbootdatajpa.entity.extents_strategy.single_table;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.Basic;
 import javax.persistence.Column;
@@ -15,11 +12,16 @@ import javax.persistence.Entity;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Document extends WindowFile {
 
  @Basic
  @Column(name = "SIZE")
  private String size;
 
+ @Override
+ public String toString() {
+  return super.toString() + "Document{" +
+          "size='" + size + '\'' +
+          '}';
+ }
 }
