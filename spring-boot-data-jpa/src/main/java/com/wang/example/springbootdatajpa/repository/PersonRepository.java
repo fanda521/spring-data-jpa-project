@@ -124,6 +124,12 @@ public interface PersonRepository extends JpaRepository<Person,Integer>, JpaSpec
     Integer updatePerson(@Param("p") Person person);
 
 
+    @Query(nativeQuery = true,
+    value = "select t.* from t_person t")
+    List<Person> selectAllPersons();
 
+    @Query(nativeQuery = true,
+            value = "select t.t_birthday,t.t_name,t.t_address from t_person t")
+    List<Person> selectAllPersons2();
 
 }

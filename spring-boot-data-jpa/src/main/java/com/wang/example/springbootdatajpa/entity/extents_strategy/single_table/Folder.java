@@ -15,7 +15,6 @@ import javax.persistence.Entity;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 public class Folder extends WindowFile {
 
  @Basic

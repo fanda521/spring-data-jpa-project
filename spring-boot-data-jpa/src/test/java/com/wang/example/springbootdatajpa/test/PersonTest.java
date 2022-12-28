@@ -27,6 +27,17 @@ public class PersonTest {
     private PersonRepository personRepository;
 
     @Test
+    public void test01() {
+        List<Person> people = personRepository.selectAllPersons();
+        System.out.println(people);
+    }
+
+    @Test
+    public void test02() {
+        List<Person> people = personRepository.selectAllPersons2();
+        System.out.println(people);
+    }
+    @Test
     public  void testFindByName(){
         List<Person> personList = this.personRepository.findByName("王大大");
         personList.forEach(System.out::println);
