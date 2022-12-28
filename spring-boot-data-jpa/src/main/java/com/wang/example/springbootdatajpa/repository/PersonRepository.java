@@ -1,6 +1,7 @@
 package com.wang.example.springbootdatajpa.repository;
 
 import com.wang.example.springbootdatajpa.entity.Person;
+import com.wang.example.springbootdatajpa.entity.PersonVo;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -110,8 +111,34 @@ public interface PersonRepository extends JpaRepository<Person,Integer>, JpaSpec
     @Query("from Person where name=:name")
     List<Person> selectByName(@Param("name") String name);
 
+    /**
+     * 坑：
+     * 不能起别名
+     * 可能原因：有可能是Person 用了jpa注解,如果是普通的类或许可以按照原生的sql 取别名
+     * @param name
+     * @return
+     */
+    @Query(value = "select t_id ,t_name  ,t_age ,t_address ,t_birthday  from t_person t where t_name=:name",nativeQuery = true)
+    List<Person> selectByNameNative(@Param("name") String name);
+
+    /**
+     * 取别名 和 * 的会报错
+     * at org.springframework.core.convert.support.GenericConversionService.handleConverterNotFound
+     * 这个是接收的对象不是表对应的实体没有相关的注解就无法转换
+     * @param name
+     * @return
+     */
+    @Query(value = "select *  from t_person t where t_name=:name",nativeQuery = true)
+    List<PersonVo> selectByNameNative2(@Param("name") String name);
+
+
+
     @Query("from Person where name=?1 or age =?2")
     List<Person> selectByNameOrAge(String name,Integer age);
+
+
+    @Query(value = "select t_id as id,t_name as name ,t_age as age,t_address as address,t_birthday as birthday from t_person where t_name=?1 or age =?2",nativeQuery = true)
+    List<Person> selectByNameOrAgeNative(String name,Integer age);
 
     /**
      * 修改类型的必须加 注解：@Modifying

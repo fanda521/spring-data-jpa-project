@@ -595,3 +595,161 @@ public class Folder extends WindowFile {
 ![1669373795085](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1669373795085.png)
 
 ![1669373811076](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1669373811076.png)
+
+### 2.JOINED
+
+#### 1.简单说明
+
+```
+父类实体和子类实体分别对应数据库中不同的表，父类定义的内容为子类们公共的属性，子类实体中定义的内容为扩展的属性。
+实际生成的表结构如下：
+
+表：T_ANIMAL，字段：  ID,COLOR,NAME
+
+表：T_BIRD  ，字段： SPEED,ID(既是外键，也是主键)
+
+表：T_DOG，字段：   LEGS,ID(既是外键，也是主键)
+```
+
+#### 2.表对应实体
+
+##### 1.父类
+
+```java
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "t_animal")
+@Inheritance(strategy = InheritanceType.JOINED)
+@DiscriminatorColumn(name = "aaa")  // 辨别字段 AAA
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
+@Data
+public class Animal {
+
+    @Id
+    @Column(name = "id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+
+    @Column(name = "name")
+    private String name;
+
+    @Column(name = "color")
+    private String color;
+}
+
+
+```
+
+##### 2.子类1
+
+```java
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "t_bird")
+@DiscriminatorValue("bird")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Bird extends Animal {  
+  
+    @Column(name = "speed")
+    private String speed;
+
+    @Override
+    public String toString() {
+        return super.toString() + "Bird{" +
+                "speed='" + speed + '\'' +
+                '}';
+    }
+}
+```
+
+##### 3.子类2
+
+```java
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.persistence.Column;
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+
+@Entity
+@Table(name = "t_dog")
+@DiscriminatorValue("dog")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class Dog extends Animal {  
+  
+    @Column(name = "legs")
+    private Integer legs;
+
+    @Override
+    public String toString() {
+        return super.toString() + "Dog{" +
+                "legs=" + legs +
+                '}';
+    }
+}
+
+```
+
+#### 4.自动生成的表结构
+
+##### 1.父表（公共表）
+
+```sql
+CREATE TABLE `t_animal` (
+  `aaa` varchar(31) NOT NULL,
+  `id` int(11) NOT NULL,
+  `color` varchar(255) DEFAULT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+```
+
+##### 2.子表1
+
+```aql
+
+CREATE TABLE `t_bird` (
+  `speed` varchar(255) DEFAULT NULL,
+  `id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `FKky0iakih6f0xm2eqtq3p5s8u7` FOREIGN KEY (`id`) REFERENCES `t_animal` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+```
+
+##### 3.子表2
+
+```
+CREATE TABLE `t_bird` (
+  `speed` varchar(255) DEFAULT NULL,
+  `id` int(11) NOT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `FKky0iakih6f0xm2eqtq3p5s8u7` FOREIGN KEY (`id`) REFERENCES `t_animal` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+```
+
