@@ -713,7 +713,7 @@ public class Dog extends Animal {
 
 ```
 
-#### 4.自动生成的表结构
+#### 3.自动生成的表结构
 
 ##### 1.父表（公共表）
 
@@ -750,6 +750,87 @@ CREATE TABLE `t_bird` (
   CONSTRAINT `FKky0iakih6f0xm2eqtq3p5s8u7` FOREIGN KEY (`id`) REFERENCES `t_animal` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
+```
+
+### 3.Table_pre_class
+
+#### 1.简单说明
+
+```
+父类实体和子类实体各自生成表，实体对应自己生成的表，子类实体对应的表的字段保存所有的属性，包括从父类实体中继承的属性
+
+一旦使用这种策略就意味着你不能使用AUTO generator 和IDENTITY generator，即主键值不能采用数据库自动生成
+```
+
+#### 2.表对应的实体类
+
+##### 1.父类
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "t_Vehicle")
+public class Vehicle {
+
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+
+    @Column(name = "SPEED")
+    private Integer speed;// 速度
+
+}
+
+```
+
+
+
+##### 2.子类1
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@Table(name = "t_car")
+public class Car extends Vehicle {  
+  
+    @Column(name = "engine")
+    private String engine;// 发动机  
+
+}
+
+
+```
+
+#### 3.自动生成的表结构
+
+##### 1.父表
+
+```sql
+CREATE TABLE `t_vehicle` (
+  `id` int(11) NOT NULL,
+  `speed` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+```
+
+##### 2.字表1
+
+```sql
+CREATE TABLE `t_car` (
+  `id` int(11) NOT NULL,
+  `speed` int(11) DEFAULT NULL,
+  `engine` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 ```
 
