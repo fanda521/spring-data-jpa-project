@@ -509,6 +509,41 @@ public class AuditConfig implements AuditorAware {
 
 
 
+### 4.更新时创建时间和人为空的解决
+
+```
+1.审计时，更新操作，创建人和创建时间为空
+解决方法updatable = false
+@Column(name = "cre_date", updatable = false)
+```
+
+### 5.自定义的sql审计是不会起作用的
+
+```java
+@Modifying
+    @Transactional
+    @Query(nativeQuery = true,
+    value = "update t_my_audit t set t.t_name=:#{#req.name} where t.t_id=:#{#req.id}")
+    int updateMyAudit(@Param("req") MyAudit myAudit);
+    
+    
+@Test
+    public void updateTest02() {
+        MyAudit myAudit = new MyAudit();
+        myAudit.setId(1);
+        myAudit.setName("frank");
+        int i = myAuditRepository.updateMyAudit(myAudit);
+        System.out.println(i);
+        /**
+         * Hibernate: update t_my_audit t set t.t_name=? where t.t_id=?
+         * 1
+         */
+
+    }    
+```
+
+
+
 ## 4.jpa继承
 
 ### 1.SINGLE_TABLE
