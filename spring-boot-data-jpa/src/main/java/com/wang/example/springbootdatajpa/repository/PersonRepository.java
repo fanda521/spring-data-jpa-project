@@ -138,6 +138,18 @@ public interface PersonRepository extends JpaRepository<Person,Integer>, JpaSpec
     @Query(value = "select *  from t_person t where t_name=:name",nativeQuery = true)
     List<PersonVo> selectByNameNative2(@Param("name") String name);
 
+    @Query(value = "from Person ")
+    List<PersonVo> selectAll();
+
+
+    @Query(value = "select * from t_person ",nativeQuery = true)
+    List<PersonVo> selectAllNative();
+
+    @Query(value = "select t.name,t.address,t.birthday from Person t")
+    List<Person> selectAllPartFields();
+
+    @Query(value = "select t.t_name name,t.t_address address,t.t_birthday birthday from t_person t",nativeQuery = true)
+    List<Person> selectAllPartFieldsNative();
 
 
     @Query("from Person where name=?1 or age =?2")

@@ -947,3 +947,56 @@ public List<Person> getByNameLikeSql(String name) {
     }
 ```
 
+### 3.结果接收
+
+#### 1.使用vo（@query失败 jpa）
+
+```
+1.不使用表对应的实体类接收是不行的。会报错
+org.springframework.core.convert.ConverterNotFoundException: No converter found capable of converting from type [org.springframework.data.jpa.repository.query.AbstractJpaQuery$TupleConverter$TupleBackedMap] to type [com.wang.example.springbootdatajpa.entity.PersonVo]
+```
+
+#### 2.使用vo（@query失败 native）
+
+```
+1.不使用表对应的实体类接收是不行的。会报错
+org.springframework.core.convert.ConverterNotFoundException: No converter found capable of converting from type [org.springframework.data.jpa.repository.query.AbstractJpaQuery$TupleConverter$TupleBackedMap] to type [com.wang.example.springbootdatajpa.entity.PersonVo]
+```
+
+#### 3.domain接收部分字段
+
+```java
+1.使用表对应的实体类接收，但是只接收部分字段
+2.结果是不行的，报错
+/**
+     * 用domain 接收部分字段
+     * 结果：失败
+     * 错误：org.springframework.core.convert.ConversionFailedException: 
+     * Failed to convert from type [java.lang.Object[]] 
+     * to type [@org.springframework.data.jpa.repository.Query com.wang.example.springbootdatajpa.entity.Person] 
+     * for value '{allan, 1, 2022-11-30 10:40:05.0}';
+     * nested exception is org.springframework.core.convert.ConverterNotFoundException:
+     * No converter found capable of converting from type [java.lang.String] 
+     * to type [@org.springframework.data.jpa.repository.Query com.wang.example.springbootdatajpa.entity.Person]
+     */
+```
+
+#### 4.domain接收部分字段（native）
+
+```java
+1.失败
+/**
+     * 用domain 接收部分字段(native)
+     * 结果：失败
+     * 错误：
+     * 2022-12-29 11:56:45.258  WARN 37704 --- [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   :
+     * SQL Error: 0, SQLState: S0022
+     * 2022-12-29 11:56:45.259 ERROR 37704 --- [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   :
+     * Column 't_id' not found.
+     *
+     * org.springframework.dao.InvalidDataAccessResourceUsageException:
+     * could not execute query; SQL [select t.t_name name,t.t_address address,t.t_birthday birthday from t_person t];
+     * nested exception is org.hibernate.exception.SQLGrammarException: could not execute query
+     */
+```
+
