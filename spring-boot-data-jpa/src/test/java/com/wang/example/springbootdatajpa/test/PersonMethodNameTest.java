@@ -1,5 +1,6 @@
 package com.wang.example.springbootdatajpa.test;
 
+import com.wang.example.springbootdatajpa.PersonService;
 import com.wang.example.springbootdatajpa.entity.Person;
 import com.wang.example.springbootdatajpa.repository.PersonRepository;
 import org.junit.Test;
@@ -24,16 +25,43 @@ public class PersonMethodNameTest {
     @Autowired
     private PersonRepository personRepository;
 
+    @Autowired
+    private PersonService personService;
+
     @Test
     public void test01() {
-        List<Person> lu = personRepository.findByNameLike("lu");
+        List<Person> lu = personRepository.findByNameLike("%" + "a" + "%");
         System.out.println(lu);
     }
 
     @Test
     public void test02() {
-        List<Person> lu = personRepository.findByNameNotLike("lu");
+        List<Person> lu = personRepository.findByNameNotLike("%" + "a" + "%");
         System.out.println(lu);
+    }
+
+    @Test
+    public void testLikeQuery() {
+        List<Person> nameLike = personRepository.getNameLike("%" + "a" + "%");
+        System.out.println(nameLike);
+    }
+
+    @Test
+    public void testLikeQueryNative() {
+        List<Person> nameLike = personRepository.getNameLikeNative("%" + "a" + "%");
+        System.out.println(nameLike);
+    }
+
+    @Test
+    public void testLikeEntityManagerNative() {
+        List<Person> a = personService.getByNameLikeSql("a");
+        System.out.println(a);
+    }
+
+    @Test
+    public void testLikeEntityManagerNativeIndex() {
+        List<Person> a = personService.getByNameLikeSqlIndex("a");
+        System.out.println(a);
     }
 
     @Test

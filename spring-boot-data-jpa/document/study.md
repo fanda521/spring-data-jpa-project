@@ -834,3 +834,116 @@ CREATE TABLE `t_car` (
 
 ```
 
+## 5.常见的坑
+
+### 1.模糊查询
+
+```
+1.根据方法名的方式 
+需要在参数值那里手动加上 %name%
+2.@query方式也需要加上 %name%
+3.entityManager
+这种的也需要在参数值那里加上
+```
+
+![1672282737194](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1672282737194.png)
+
+```sql
+-- jpa
+@Query(value = "from Person t where t.name like :name")
+    List<Person> getNameLike(String name);
+    
+    
+@Test
+    public void testLikeQuery() {
+        List<Person> nameLike = personRepository.getNameLike("%" + "a" + "%");
+        System.out.println(nameLike);
+    }  
+    
+-- native
+@Query(nativeQuery = true,
+    value = "select * from t_person t where t.t_name like :name")
+    List<Person> getNameLikeNative(String name);
+    
+@Test
+    public void testLikeQueryNative() {
+        List<Person> nameLike = personRepository.getNameLikeNative("%" + "a" + "%");
+        System.out.println(nameLike);
+    }    
+```
+
+```java 
+public List<Person> getByNameLikeSql(String name) {
+        String sql =" select t.t_id id,t.t_name name , \n" +
+                " t.t_age age,t.t_address address, t.t_birthday birthday \n" +
+                " from t_person t \n" +
+                " where t.t_name like :name";
+
+        Query nativeQuery = entityManager.createNativeQuery(sql);
+        nativeQuery.setParameter("name","%" + name + "%");
+        org.hibernate.query.Query query = nativeQuery.unwrap(org.hibernate.query.Query.class).setResultTransformer(Transformers.aliasToBean(Person.class));
+        List<Person> resultList = query.getResultList();
+        return resultList;
+    }
+
+@Test
+    public void testLikeEntityManagerNative() {
+        List<Person> a = personService.getByNameLikeSql("a");
+        System.out.println(a);
+    }
+```
+
+### 2.传参
+
+#### 1.?1
+
+```java
+通过位置传参
+是从1开始的
+-- 1.jpa
+@Query("from Person where name=?1 or age =?2")
+    List<Person> selectByNameOrAge(String name,Integer age);
+    
+-- 2. native
+@Query(value = "select t_id as id,t_name as name ,t_age as age,t_address as address,t_birthday as birthday from t_person where t_name=?1 or age =?2",nativeQuery = true)
+    List<Person> selectByNameOrAgeNative(String name,Integer age);
+--3.entityManager
+public List<Person> getByNameLikeSqlIndex(String name) {
+        String sql =" select t.t_id id,t.t_name name , \n" +
+                " t.t_age age,t.t_address address, t.t_birthday birthday \n" +
+                " from t_person t \n" +
+                " where t.t_name like ?1";
+
+        Query nativeQuery = entityManager.createNativeQuery(sql);
+        nativeQuery.setParameter(1,"%" + name + "%");
+        org.hibernate.query.Query query = nativeQuery.unwrap(org.hibernate.query.Query.class).setResultTransformer(Transformers.aliasToBean(Person.class));
+        List<Person> resultList = query.getResultList();
+        return resultList;
+    }
+```
+
+#### 2.:name
+
+```java
+通过参数名传参
+--1.jpa
+@Query("from Person where name=:name")
+    List<Person> selectByName(@Param("name") String name);
+-- 2.native
+@Query(value = "select t_id ,t_name  ,t_age ,t_address ,t_birthday  from t_person t where t_name=:name",nativeQuery = true)
+    List<Person> selectByNameNative(@Param("name") String name);
+-- 3.entityManager
+public List<Person> getByNameLikeSql(String name) {
+        String sql =" select t.t_id id,t.t_name name , \n" +
+                " t.t_age age,t.t_address address, t.t_birthday birthday \n" +
+                " from t_person t \n" +
+                " where t.t_name like :name";
+
+        Query nativeQuery = entityManager.createNativeQuery(sql);
+        nativeQuery.setParameter("name","%" + name + "%");
+        org.hibernate.query.Query query = nativeQuery.unwrap(org.hibernate.query.Query.class).setResultTransformer(Transformers.aliasToBean(Person.class));
+        List<Person> resultList = query.getResultList();
+        return resultList;
+    }
+```
+

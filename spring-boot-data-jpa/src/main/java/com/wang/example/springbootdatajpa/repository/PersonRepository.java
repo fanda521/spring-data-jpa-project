@@ -41,6 +41,13 @@ public interface PersonRepository extends JpaRepository<Person,Integer>, JpaSpec
      */
     List<Person> findByNameNotLike(String name);
 
+    @Query(value = "from Person t where t.name like :name")
+    List<Person> getNameLike(String name);
+
+    @Query(nativeQuery = true,
+    value = "select * from t_person t where t.t_name like :name")
+    List<Person> getNameLikeNative(String name);
+
     /**
      * %name
      * @param name
