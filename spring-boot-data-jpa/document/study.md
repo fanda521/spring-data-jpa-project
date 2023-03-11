@@ -509,6 +509,41 @@ public class AuditConfig implements AuditorAware {
 
 
 
+### 4.更新时创建时间和人为空的解决
+
+```
+1.审计时，更新操作，创建人和创建时间为空
+解决方法updatable = false
+@Column(name = "cre_date", updatable = false)
+```
+
+### 5.自定义的sql审计是不会起作用的
+
+```java
+@Modifying
+    @Transactional
+    @Query(nativeQuery = true,
+    value = "update t_my_audit t set t.t_name=:#{#req.name} where t.t_id=:#{#req.id}")
+    int updateMyAudit(@Param("req") MyAudit myAudit);
+    
+    
+@Test
+    public void updateTest02() {
+        MyAudit myAudit = new MyAudit();
+        myAudit.setId(1);
+        myAudit.setName("frank");
+        int i = myAuditRepository.updateMyAudit(myAudit);
+        System.out.println(i);
+        /**
+         * Hibernate: update t_my_audit t set t.t_name=? where t.t_id=?
+         * 1
+         */
+
+    }    
+```
+
+
+
 ## 4.jpa继承
 
 ### 1.SINGLE_TABLE
@@ -713,7 +748,7 @@ public class Dog extends Animal {
 
 ```
 
-#### 4.自动生成的表结构
+#### 3.自动生成的表结构
 
 ##### 1.父表（公共表）
 
@@ -751,5 +786,252 @@ CREATE TABLE `t_bird` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
+```
+
+### 3.Table_pre_class
+
+#### 1.简单说明
+
+```
+父类实体和子类实体各自生成表，实体对应自己生成的表，子类实体对应的表的字段保存所有的属性，包括从父类实体中继承的属性
+
+一旦使用这种策略就意味着你不能使用AUTO generator 和IDENTITY generator，即主键值不能采用数据库自动生成
+```
+
+#### 2.表对应的实体类
+
+##### 1.父类
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(name = "t_Vehicle")
+public class Vehicle {
+
+    @Id
+    //@GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer id;
+
+    @Column(name = "SPEED")
+    private Integer speed;// 速度
+
+}
+
+```
+
+
+
+##### 2.子类1
+
+```java
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+
+@Entity
+@Table(name = "t_car")
+public class Car extends Vehicle {  
+  
+    @Column(name = "engine")
+    private String engine;// 发动机  
+
+}
+
+
+```
+
+#### 3.自动生成的表结构
+
+##### 1.父表
+
+```sql
+CREATE TABLE `t_vehicle` (
+  `id` int(11) NOT NULL,
+  `speed` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+```
+
+##### 2.字表1
+
+```sql
+CREATE TABLE `t_car` (
+  `id` int(11) NOT NULL,
+  `speed` int(11) DEFAULT NULL,
+  `engine` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+```
+
+## 5.常见的坑
+
+### 1.模糊查询
+
+```
+1.根据方法名的方式 
+需要在参数值那里手动加上 %name%
+2.@query方式也需要加上 %name%
+3.entityManager
+这种的也需要在参数值那里加上
+```
+
+![1672282737194](C:\Users\Administrator\AppData\Roaming\Typora\typora-user-images\1672282737194.png)
+
+```sql
+-- jpa
+@Query(value = "from Person t where t.name like :name")
+    List<Person> getNameLike(String name);
+    
+    
+@Test
+    public void testLikeQuery() {
+        List<Person> nameLike = personRepository.getNameLike("%" + "a" + "%");
+        System.out.println(nameLike);
+    }  
+    
+-- native
+@Query(nativeQuery = true,
+    value = "select * from t_person t where t.t_name like :name")
+    List<Person> getNameLikeNative(String name);
+    
+@Test
+    public void testLikeQueryNative() {
+        List<Person> nameLike = personRepository.getNameLikeNative("%" + "a" + "%");
+        System.out.println(nameLike);
+    }    
+```
+
+```java 
+public List<Person> getByNameLikeSql(String name) {
+        String sql =" select t.t_id id,t.t_name name , \n" +
+                " t.t_age age,t.t_address address, t.t_birthday birthday \n" +
+                " from t_person t \n" +
+                " where t.t_name like :name";
+
+        Query nativeQuery = entityManager.createNativeQuery(sql);
+        nativeQuery.setParameter("name","%" + name + "%");
+        org.hibernate.query.Query query = nativeQuery.unwrap(org.hibernate.query.Query.class).setResultTransformer(Transformers.aliasToBean(Person.class));
+        List<Person> resultList = query.getResultList();
+        return resultList;
+    }
+
+@Test
+    public void testLikeEntityManagerNative() {
+        List<Person> a = personService.getByNameLikeSql("a");
+        System.out.println(a);
+    }
+```
+
+### 2.传参
+
+#### 1.?1
+
+```java
+通过位置传参
+是从1开始的
+-- 1.jpa
+@Query("from Person where name=?1 or age =?2")
+    List<Person> selectByNameOrAge(String name,Integer age);
+    
+-- 2. native
+@Query(value = "select t_id as id,t_name as name ,t_age as age,t_address as address,t_birthday as birthday from t_person where t_name=?1 or age =?2",nativeQuery = true)
+    List<Person> selectByNameOrAgeNative(String name,Integer age);
+--3.entityManager
+public List<Person> getByNameLikeSqlIndex(String name) {
+        String sql =" select t.t_id id,t.t_name name , \n" +
+                " t.t_age age,t.t_address address, t.t_birthday birthday \n" +
+                " from t_person t \n" +
+                " where t.t_name like ?1";
+
+        Query nativeQuery = entityManager.createNativeQuery(sql);
+        nativeQuery.setParameter(1,"%" + name + "%");
+        org.hibernate.query.Query query = nativeQuery.unwrap(org.hibernate.query.Query.class).setResultTransformer(Transformers.aliasToBean(Person.class));
+        List<Person> resultList = query.getResultList();
+        return resultList;
+    }
+```
+
+#### 2.:name
+
+```java
+通过参数名传参
+--1.jpa
+@Query("from Person where name=:name")
+    List<Person> selectByName(@Param("name") String name);
+-- 2.native
+@Query(value = "select t_id ,t_name  ,t_age ,t_address ,t_birthday  from t_person t where t_name=:name",nativeQuery = true)
+    List<Person> selectByNameNative(@Param("name") String name);
+-- 3.entityManager
+public List<Person> getByNameLikeSql(String name) {
+        String sql =" select t.t_id id,t.t_name name , \n" +
+                " t.t_age age,t.t_address address, t.t_birthday birthday \n" +
+                " from t_person t \n" +
+                " where t.t_name like :name";
+
+        Query nativeQuery = entityManager.createNativeQuery(sql);
+        nativeQuery.setParameter("name","%" + name + "%");
+        org.hibernate.query.Query query = nativeQuery.unwrap(org.hibernate.query.Query.class).setResultTransformer(Transformers.aliasToBean(Person.class));
+        List<Person> resultList = query.getResultList();
+        return resultList;
+    }
+```
+
+### 3.结果接收
+
+#### 1.使用vo（@query失败 jpa）
+
+```
+1.不使用表对应的实体类接收是不行的。会报错
+org.springframework.core.convert.ConverterNotFoundException: No converter found capable of converting from type [org.springframework.data.jpa.repository.query.AbstractJpaQuery$TupleConverter$TupleBackedMap] to type [com.wang.example.springbootdatajpa.entity.PersonVo]
+```
+
+#### 2.使用vo（@query失败 native）
+
+```
+1.不使用表对应的实体类接收是不行的。会报错
+org.springframework.core.convert.ConverterNotFoundException: No converter found capable of converting from type [org.springframework.data.jpa.repository.query.AbstractJpaQuery$TupleConverter$TupleBackedMap] to type [com.wang.example.springbootdatajpa.entity.PersonVo]
+```
+
+#### 3.domain接收部分字段
+
+```java
+1.使用表对应的实体类接收，但是只接收部分字段
+2.结果是不行的，报错
+/**
+     * 用domain 接收部分字段
+     * 结果：失败
+     * 错误：org.springframework.core.convert.ConversionFailedException: 
+     * Failed to convert from type [java.lang.Object[]] 
+     * to type [@org.springframework.data.jpa.repository.Query com.wang.example.springbootdatajpa.entity.Person] 
+     * for value '{allan, 1, 2022-11-30 10:40:05.0}';
+     * nested exception is org.springframework.core.convert.ConverterNotFoundException:
+     * No converter found capable of converting from type [java.lang.String] 
+     * to type [@org.springframework.data.jpa.repository.Query com.wang.example.springbootdatajpa.entity.Person]
+     */
+```
+
+#### 4.domain接收部分字段（native）
+
+```java
+1.失败
+/**
+     * 用domain 接收部分字段(native)
+     * 结果：失败
+     * 错误：
+     * 2022-12-29 11:56:45.258  WARN 37704 --- [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   :
+     * SQL Error: 0, SQLState: S0022
+     * 2022-12-29 11:56:45.259 ERROR 37704 --- [           main] o.h.engine.jdbc.spi.SqlExceptionHelper   :
+     * Column 't_id' not found.
+     *
+     * org.springframework.dao.InvalidDataAccessResourceUsageException:
+     * could not execute query; SQL [select t.t_name name,t.t_address address,t.t_birthday birthday from t_person t];
+     * nested exception is org.hibernate.exception.SQLGrammarException: could not execute query
+     */
 ```
 

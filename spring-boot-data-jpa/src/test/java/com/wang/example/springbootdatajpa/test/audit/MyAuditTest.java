@@ -53,5 +53,19 @@ public class MyAuditTest {
          */
     }
 
+    @Test
+    public void updateTest02() {
+        MyAudit myAudit = new MyAudit();
+        myAudit.setId(1);
+        myAudit.setName("frank");
+        int i = myAuditRepository.updateMyAudit(myAudit);
+        System.out.println(i);
+        /**
+         * Hibernate: update t_my_audit t set t.t_name=? where t.t_id=?
+         * 1
+         */
+
+    }
+
 
 }

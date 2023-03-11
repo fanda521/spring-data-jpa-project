@@ -41,6 +41,13 @@ public interface PersonRepository extends JpaRepository<Person,Integer>, JpaSpec
      */
     List<Person> findByNameNotLike(String name);
 
+    @Query(value = "from Person t where t.name like :name")
+    List<Person> getNameLike(String name);
+
+    @Query(nativeQuery = true,
+    value = "select * from t_person t where t.t_name like :name")
+    List<Person> getNameLikeNative(String name);
+
     /**
      * %name
      * @param name
@@ -131,6 +138,18 @@ public interface PersonRepository extends JpaRepository<Person,Integer>, JpaSpec
     @Query(value = "select *  from t_person t where t_name=:name",nativeQuery = true)
     List<PersonVo> selectByNameNative2(@Param("name") String name);
 
+    @Query(value = "from Person ")
+    List<PersonVo> selectAll();
+
+
+    @Query(value = "select * from t_person ",nativeQuery = true)
+    List<PersonVo> selectAllNative();
+
+    @Query(value = "select t.name,t.address,t.birthday from Person t")
+    List<Person> selectAllPartFields();
+
+    @Query(value = "select t.t_name name,t.t_address address,t.t_birthday birthday from t_person t",nativeQuery = true)
+    List<Person> selectAllPartFieldsNative();
 
 
     @Query("from Person where name=?1 or age =?2")
@@ -151,6 +170,12 @@ public interface PersonRepository extends JpaRepository<Person,Integer>, JpaSpec
     Integer updatePerson(@Param("p") Person person);
 
 
+    @Query(nativeQuery = true,
+    value = "select t.* from t_person t")
+    List<Person> selectAllPersons();
 
+    @Query(nativeQuery = true,
+            value = "select t.t_birthday,t.t_name,t.t_address from t_person t")
+    List<Person> selectAllPersons2();
 
 }

@@ -42,7 +42,7 @@ public class MyAudit {
      * @CreatedDate：创建时间
      * @LastModifiedDate：最后更新时间
      */
-    @Column(name = "cre_user")
+    @Column(name = "cre_user", updatable = false)
     @CreatedBy
     private String createUser;
 
@@ -51,7 +51,7 @@ public class MyAudit {
     private String modifyUser;
 
 
-    @Column(name = "cre_date")
+    @Column(name = "cre_date", updatable = false)
     @CreatedDate
     private Date createDate;
 
